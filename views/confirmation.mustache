@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>{{ title }}</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
+  {{> head}}
   <body>
     <h1>{{ title }}</h1>
-    You have successfully logged in
+    <p>You have successfully logged in</p>
+    <p>Select the file you want to import</p>
     {{#files}}
-    <div>{{.}}</div>
+    <div class="drive-item z-depth-1 center-align" id="{{id}}">{{name}}</div>
     {{/files}}
   </body>
 </html>

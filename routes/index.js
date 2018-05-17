@@ -35,6 +35,7 @@ router.get('/confirmation', function(req, res, next) {
   oAuth2Client.getToken(code, (err, token) => {
       if (err) return callback(err);
       oAuth2Client.setCredentials(token);
+      console.log("CLIENT: ",oAuth2Client)
       listFiles(oAuth2Client);
   });
   function listFiles(auth) {
@@ -45,17 +46,14 @@ router.get('/confirmation', function(req, res, next) {
     }, (err, {data}) => {
         if (err) return console.log('The API returned an error: ' + err);
         const files = data.files;
-        console.log("FILES: ", files);
-        console.log("DATA: ", data)
         if (files.length) {
-            console.log('Files:');
             const filteredFiles = files.filter(file => {
               if (file.mimeType === 'application/vnd.google-apps.spreadsheet'){
                 return file;
               }
             })
             const displayFiles = filteredFiles.map((file) => {
-                return `${file.name} (${file.id}) (${file.mimeType})`;
+                return {name: file.name, id: file.id};
             });
           res.render("confirmation", {files: displayFiles})
         } else {
@@ -63,8 +61,52 @@ router.get('/confirmation', function(req, res, next) {
         }
     });
   }
-
 })
+
+router.post('/sheet', function(req, res, next){
+  const id = req.body.id;
+  const sheets = google.sheets({version: 'v4', oAuth2Client});
+  console.log("sheets object created");
+  console.log(id)
+  // const spreadsheetMetaData = {spreadsheetId: id, range: 'Form Responses 1'};
+  // console.log("got metadata: ", spreadsheetMetaData)
+  console.log(oAuth2Client);
+  sheets.spreadsheets.values.get({
+    spreadsheetId: id,
+    range: 'Form Responses 1'
+  }, (err, {data}) => {
+    console.log("in the callback")
+    if (err) return console.log("ERROR: ", err)
+    console.log(data)
+  })
+
+
+
+  // sheets.spreadsheets.values.get(spreadsheetMetaData, (err, {data}) => {
+  //   console.log("FUnctiuon running");
+  //   if (err) {
+  //     console.log('The API returned an error: ' + err);
+  //     return res.json({confirmation: "fail", error: err})
+  //   }
+  //   console.log("hello")
+  //   console.log("DATA: ", {data} )
+  //   const rows = data.values;
+  //   if (rows.length) {
+  //     const output = rows.map((row) => {
+  //       return {timestamp: row[0], name: row[1], response: row[2]};
+  //     });
+  //     console.log(output)
+  //     res.json({confirmation: 'success', output: output})
+  //   } else {
+  //     console.log('No data found.');
+  //   }
+  // })
+  // .catch(err => {
+  //   console.log(err)
+  //   res.json({confirmation: "fail", error: err})
+  // })
+})
+
 
 
 
