@@ -1,6 +1,7 @@
 const express = require('express');
 const {google} = require('googleapis');
 
+
 var router = express.Router();
 
 /* GET home page. */
@@ -11,11 +12,10 @@ router.get('/', function(req, res, next) {
     process.env.CLIENT_SECRET,
     process.env.REDIRECT_URI
   );
-
   // generate a url that asks permissions for Google+ and Google Calendar scopes
   const scopes = [
     'https://www.googleapis.com/auth/drive',
-    // 'https://www.googleapis.com/auth/sheets'
+    'https://www.googleapis.com/auth/spreadsheets'
   ];
 
   const url = oauth2Client.generateAuthUrl({
@@ -25,12 +25,18 @@ router.get('/', function(req, res, next) {
     // If you only need one scope you can pass it as a string
     scope: scopes
   });
-  console.log(url)
+
   res.redirect(url);
 });
 
 router.get('/confirmation', function(req, res, next) {
-  res.render('confirmation')
+  const code = req.query.code
+  oatuh2Client.getToken(code)
+  .then(function(response) {
+    const token = response
+    oauth2Client.setCredentials(tokens);
+    res.render('confirmation')
+  })
 })
 
 
