@@ -1,4 +1,5 @@
 const express = require('express');
+const studentResponses = require('../controllers/studentResponsesController')
 const {google} = require('googleapis');
 require('dotenv').config();
 
@@ -82,8 +83,27 @@ router.post('/sheet', function(req, res, next){
     }, (err, { data }) => {
       console.log("in the callback")
       if (err) return console.log("ERROR: ", err)
-      console.log(data.values)
-      res.render("data", {data: data.values})
+
+      const headers = data.values.shift();
+      let dataArr = [];
+      data.values.forEach(rowData => {
+        let rowObj = {};
+        rowData.forEach((cellData, index) => {
+          rowObj[headers[index]] = cellData;
+        })
+        dataArr.push(rowObj)
+      })
+      studentResponses.post({
+        teacher: "MR. M",
+        problemName: "Easy math questions",
+        responses: dataArr
+      })
+      .then(resp => {
+        res.json(resp)
+      })
+      .catch(err => {
+        res.json(err)
+      })
     })
   })
 
