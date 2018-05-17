@@ -24,3 +24,10 @@ Now you are ready to clone the project.
   * CLIENT_SECRET='yourClientSecretFromGoogle'
   * API_KEY='youAPIkeyFromGoogle'
   * MONGO_URI='mongodb://localhost/<your db name>
+
+## Issues with this process as it relates to Encompass
+1. Teacher has to create form and make sure name is saved as form title
+2. Students have to fill out form
+3. Teacher has to save form responses as a google sheet
+4. Teacher has to make sure google spreadsheet can be shared by link
+5. Teacher has to login to encompass with google account
