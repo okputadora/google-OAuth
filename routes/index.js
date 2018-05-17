@@ -38,26 +38,30 @@ router.get('/confirmation', function(req, res, next) {
       listFiles(oAuth2Client);
   });
   function listFiles(auth) {
-      const drive = google.drive({ version: 'v3', auth });
-      drive.files.list({
-          pageSize: 50,
-          fields: 'nextPageToken, files(id, name, mimeType)',
-      }, (err, {data}) => {
-          if (err) return console.log('The API returned an error: ' + err);
-          const files = data.files;
-          console.log("FILES: ", files);
-          console.log("DATA: ", data)
-          if (files.length) {
-              console.log('Files:');
-              const filteredFiles = files.filter(file => file.mimeType = 'application/vnd.google-apps.spreadsheet');
-              const displayFiles = filteredFiles.map((file) => {
-                  return `${file.name} (${file.id}) (${file.mimeType})`;
-              });
-            res.render("confirmation", {files: displayFiles})
-          } else {
-              console.log('No files found.');
-          }
-      });
+    const drive = google.drive({ version: 'v3', auth });
+    drive.files.list({
+        pageSize: 50,
+        fields: 'nextPageToken, files(id, name, mimeType)',
+    }, (err, {data}) => {
+        if (err) return console.log('The API returned an error: ' + err);
+        const files = data.files;
+        console.log("FILES: ", files);
+        console.log("DATA: ", data)
+        if (files.length) {
+            console.log('Files:');
+            const filteredFiles = files.filter(file => {
+              if (file.mimeType === 'application/vnd.google-apps.spreadsheet'){
+                return file;
+              }
+            })
+            const displayFiles = filteredFiles.map((file) => {
+                return `${file.name} (${file.id}) (${file.mimeType})`;
+            });
+          res.render("confirmation", {files: displayFiles})
+        } else {
+            console.log('No files found.');
+        }
+    });
   }
 
 })
