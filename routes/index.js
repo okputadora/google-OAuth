@@ -71,15 +71,20 @@ router.post('/sheet', function(req, res, next){
   // const spreadsheetMetaData = {spreadsheetId: id, range: 'Form Responses 1'};
   // console.log("got metadata: ", spreadsheetMetaData)
   // console.log(oAuth2Client);
-  sheets.spreadsheets.values.get({
-    spreadsheetId: id,
-    range: 'Form Responses 1',
-    key: process.env.API_KEY
-  }, (err, { data }) => {
-    console.log("in the callback")
-    if (err) return console.log("ERROR: ", err)
-    console.log(data.values)
-    res.render("data", {data: data.values})
+  sheets.spreadsheets.get({spreadsheetId: id, key: process.env.API_KEY}, (err, {data}) => {
+    if (err) {console.log("ERROR: ",err)}
+    const range = data.sheets[0].properties.title;
+    console.log(range)
+    sheets.spreadsheets.values.get({
+      spreadsheetId: id,
+      range: range,
+      key: process.env.API_KEY
+    }, (err, { data }) => {
+      console.log("in the callback")
+      if (err) return console.log("ERROR: ", err)
+      console.log(data.values)
+      res.render("data", {data: data.values})
+    })
   })
 
 
