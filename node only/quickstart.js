@@ -5,7 +5,6 @@ const { google } = require('googleapis');
 // If modifying these scopes, delete credentials.json.
 const SCOPES = [
   "https://www.googleapis.com/auth/drive.readonly",
-  'https://www.googleapis.com/auth/speeadsheets'
 ];
 const TOKEN_PATH = 'credentials.json';
 
@@ -73,18 +72,20 @@ function getAccessToken(oAuth2Client, callback) {
 function listFiles(auth) {
     const drive = google.drive({ version: 'v3', auth });
     drive.files.list({
-        pageSize: 10,
-        fields: 'nextPageToken, files(id, name)',
+        pageSize: 50,
+        fields: 'nextPageToken, files(id, name, mimeType)',
     }, (err, { data }) => {
         if (err) return console.log('The API returned an error: ' + err);
         const files = data.files;
         if (files.length) {
             console.log('Files:');
+            files.filter(file => file.mimeType = 'application/vnd.google-apps.spreadsheet');
             files.map((file) => {
-                console.log(`${file.name} (${file.id})`);
+                console.log(`${file.name} (${file.id}) (${file.mimeType})`);
             });
         } else {
             console.log('No files found.');
         }
     });
 }
+
