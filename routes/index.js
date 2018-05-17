@@ -5,7 +5,8 @@ require('dotenv').config();
 const oAuth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
-  process.env.REDIRECT_URI
+  process.env.REDIRECT_URI,
+  process.env.API_KEY,
 );
 
 var router = express.Router();
@@ -35,7 +36,6 @@ router.get('/confirmation', function(req, res, next) {
   oAuth2Client.getToken(code, (err, token) => {
       if (err) return callback(err);
       oAuth2Client.setCredentials(token);
-      console.log("CLIENT: ",oAuth2Client)
       listFiles(oAuth2Client);
   });
   function listFiles(auth) {
@@ -70,14 +70,16 @@ router.post('/sheet', function(req, res, next){
   console.log(id)
   // const spreadsheetMetaData = {spreadsheetId: id, range: 'Form Responses 1'};
   // console.log("got metadata: ", spreadsheetMetaData)
-  console.log(oAuth2Client);
+  // console.log(oAuth2Client);
   sheets.spreadsheets.values.get({
     spreadsheetId: id,
-    range: 'Form Responses 1'
-  }, (err, {data}) => {
+    range: 'Form Responses 1',
+    key: process.env.API_KEY
+  }, (err, { data }) => {
     console.log("in the callback")
     if (err) return console.log("ERROR: ", err)
-    console.log(data)
+    console.log(data.values)
+    res.render("data", {data: data.values})
   })
 
 
